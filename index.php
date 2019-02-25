@@ -1,18 +1,19 @@
 <?php 
 
-require_once("vendor/autoload.php");
+require_once("vendor/autoload.php");//do composer
 
-$app = new \Slim\Slim();
+use \Slim\Slim;//namespace
+use \Hcode\page;//namespace
+
+$app = new \Slim\Slim();//por causa das rotas para facilitar (ajuda no SEO)
 
 $app->config('debug', true);
 
 $app->get('/', function() {
-    
-	$sql = new Hcode\DB\Sql();
 
-	$results = $sql->select("SELECT * FROM tb_users");
+	$page = new page();
 
-	echo json_encode($results);
+	$page->setTpl("index");
 
 });
 
