@@ -1,31 +1,62 @@
 <?php 
+session_start();
+require_once("vendor/autoload.php");
 
-require_once("vendor/autoload.php");//do composer
+use \Slim\Slim;
+use \Hcode\Page;
+use \Hcode\PageAdmin;
+use \Hcode\Model\User;
 
-use \Slim\Slim;//namespace
-use \Hcode\page;//namespace
-use \Hcode\pageadmin;//namespace
-
-$app = new \Slim\Slim();//por causa das rotas para facilitar (ajuda no SEO)
+$app = new Slim();
 
 $app->config('debug', true);
 
 $app->get('/', function() {
+    
+	$page = new Page();
 
-	$page = new page();
-
-	$page->setTpl("index");
+	$page ->setTpl("index");
 
 });
 
 $app->get('/admin', function() {
 
-	$page = new pageadmin();
+	User::verifyLogin();
+    
+	$page = new PageAdmin();
 
-	$page->setTpl("index");
+	$page ->setTpl("index");
 
 });
 
+$app->get('/admin/login', function(){
+
+	$page = new PageAdmin([
+		"header"=>false,
+		"footer"=>false
+	]);
+
+	$page ->setTpl("login");
+
+});
+
+$app->post('/admin/login', function(){
+
+	User:: login($_POST["login"], $_POST["password"]);
+	
+	header("Location: /admin");
+	exit;
+
+});
+
+$app->get('/admin/logout', function() {
+
+	User::logout();
+
+	header("Location: /admin/login");
+	exit;
+
+});
 $app->run();
 
  ?>
